@@ -11,7 +11,7 @@ from ._marginal_sde import *
 from ._diffusion_prior import *
 from ._likelihood import *
 from ._sde_prior import *
-from ..variationalsparsebayes.sparse_glm import SparsePolynomialFeatures
+from ..variationalsparsebayes.sparse_glm import SparsePolynomialFeatures,SparsePolynomialSinusoidTfm
 
 __all__ = [
     "SDELearner",
@@ -267,7 +267,8 @@ class SparsePolynomialSDE(SDELearner):
             t_span[0], t_span[1], n_quad, quad_percent=quad_percent
         )
         likelihood = IndepGaussLikelihood(G, num_meas, measurement_noise)
-        features = SparsePolynomialFeatures(d, degree=degree, input_labels=input_labels)
+        #features = SparsePolynomialFeatures(d, degree=degree, input_labels=input_labels)
+        features = SparsePolynomialSinusoidTfm(d, degree=degree, input_labels=input_labels)
         if fast_initialization:
             m, dmdt = marginal_sde.mean(train_t, return_grad=True)
         else:
