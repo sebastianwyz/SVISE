@@ -129,7 +129,7 @@ def lorenz(sigma, rho, beta, t, x):
         w[i] = 5*u[i]
 
     for i in range(N):
-        dtheta[...,i] = w[i] + Ku * sum(A[i, j] * torch.sin(x[...,j] - x[...,i]) for j in range(N) if i != j)
+        dtheta[...,i] = w[i] + Ku / N * sum(A[i, j] * torch.sin(x[...,j] - x[...,i]) for j in range(N) if i != j)
     return dtheta
 
         
@@ -150,7 +150,7 @@ class Lorenz:
         return self.diff
 
 #std = 1e-2
-tempo = [8]  
+tempo = [8]  # 4 - 8 - 16
 rms_means = []
 sigma_means = []
 rms_means_sindy = []
@@ -160,7 +160,7 @@ sigma_means_1 = []
 rms_means_sindy_1 = []
 sigma_means_sindy_1 = []
 for tempo in tempo:
-    SNR = [100]
+    SNR = [100]   # 20 - 40 - 100
     total_sum_final_values_10 = []
     total_sum_final_values_20 = []
     total_sum_final_values_100 = []
@@ -238,7 +238,7 @@ for tempo in tempo:
             num_dati = 256
         if tempo ==8:
             m=2
-            num_dati = 384 #512
+            num_dati = 512
         if tempo ==16:
             m=4
             num_dati = 1024
