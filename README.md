@@ -26,6 +26,3 @@ From the graphs, we observe that:
 ## Conclusion
 The results indicate that the effect of the coupling constant could cause the Frobenius norm to vary but there is no clear evidence for a preference towards a topology among SBM, BA or ER while the RGR performed worse than the other 3.
 
-## Notes
-- Graphs were generated automatically and saved in the `Graphs` folder.
-- Each graph shows the **Frobenius Metric** as a function of threshold \( t \), limited to the relevant range \( t \leq 1.5 \).
