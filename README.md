@@ -1,66 +1,56 @@
-# Analisi della Frobenius Metric su Reti Neurali
+# Analysis of the Frobenius Metric on Neural Networks
 
-## Introduzione
-Questo progetto analizza la variazione della **Frobenius Metric** per diversi tipi di reti neurali (SBM, ER, RGR, BA) in base alla soglia \( t \) e alla costante di accoppiamento (03, 05, 08, 1). Lo scopo è comprendere come la norma di Frobenius della differenza tra la matrice stimata e la matrice originale cambi al variare di questi parametri.
+## Overview
+This project investigates the variation of the **Frobenius Metric** across different types of neural networks (SBM, ER, RGR, BA) based on threshold \( t \) values and coupling constants (0.3, 0.5, 0.8, 1). The goal is to verify the effectiveness of the **SVISE method** on networks with a constant number of connections but varying topologies.
 
-## Dati e Metodo
-I dati sono stati ottenuti a partire da matrici di coefficiente stimate e matrici di adiacenza originali, moltiplicate per la costante di accoppiamento. Il calcolo della **Frobenius Metric** è stato fatto applicando diverse soglie alla matrice stimata e confrontandola con la matrice modificata per ottenere la norma di Frobenius della differenza normalizzata.
+## Data and Method
+Data was obtained by comparing estimated coefficient matrices and original adjacency matrices (scaled by the coupling constant). The **Frobenius Metric** was calculated by applying various thresholds to the estimated matrix and computing the normalized Frobenius norm of the difference between the thresholded estimated matrix and the modified adjacency matrix.
 
-### Costanti di accoppiamento analizzate
-Le costanti di accoppiamento analizzate sono:
-- **03**
-- **05**
-- **08**
+### Coupling Constants Analyzed
+The coupling constants explored in this analysis are:
+- **0.3**
+- **0.5**
+- **0.8**
 - **1**
 
-## Risultati
+## Results
 
-### Grafici della Frobenius Metric
-Qui sotto sono riportati i grafici ottenuti per ogni tipo di rete con diverse costanti di accoppiamento.
+### Frobenius Metric Graphs
+Below are the graphs of the Frobenius Metric for each network type and coupling constant.
 
-#### 1. SBM
-![SBM - C=03](Grafici_Frobenius/Frobenius_SBM_C03.png)
-![SBM - C=05](Grafici_Frobenius/Frobenius_SBM_C05.png)
-![SBM - C=08](Grafici_Frobenius/Frobenius_SBM_C08.png)
-![SBM - C=1](Grafici_Frobenius/Frobenius_SBM_C1.png)
-
-#### 2. ER
-![ER - C=03](Grafici_Frobenius/Frobenius_ER_C03.png)
-![ER - C=05](Grafici_Frobenius/Frobenius_ER_C05.png)
-![ER - C=08](Grafici_Frobenius/Frobenius_ER_C08.png)
-![ER - C=1](Grafici_Frobenius/Frobenius_ER_C1.png)
-
-#### 3. RGR
-![RGR - C=03](Grafici_Frobenius/Frobenius_RGR_C03.png)
-![RGR - C=05](Grafici_Frobenius/Frobenius_RGR_C05.png)
-![RGR - C=08](Grafici_Frobenius/Frobenius_RGR_C08.png)
-![RGR - C=1](Grafici_Frobenius/Frobenius_RGR_C1.png)
-
-#### 4. BA
-![BA - C=03](Grafici_Frobenius/Frobenius_BA_C03.png)
-![BA - C=05](Grafici_Frobenius/Frobenius_BA_C05.png)
-![BA - C=08](Grafici_Frobenius/Frobenius_BA_C08.png)
+#### 1. BA Network
+![BA - C=0.3](Grafici_Frobenius/Frobenius_BA_C03.png)
+![BA - C=0.5](Grafici_Frobenius/Frobenius_BA_C05.png)
+![BA - C=0.8](Grafici_Frobenius/Frobenius_BA_C08.png)
 ![BA - C=1](Grafici_Frobenius/Frobenius_BA_C1.png)
 
-## Discussione
-Osservando i grafici, notiamo che:
-- **[Punto di analisi 1]**: Ad esempio, le reti SBM mostrano una variazione più sensibile della Frobenius Metric al variare della costante di accoppiamento.
-- **[Punto di analisi 2]**: Le reti ER mantengono una Frobenius Metric costante fino ad un certo valore di soglia \( t \) per tutte le costanti di accoppiamento.
+#### 2. ER Network
+![ER - C=0.3](Grafici_Frobenius/Frobenius_ER_C03.png)
+![ER - C=0.5](Grafici_Frobenius/Frobenius_ER_C05.png)
+![ER - C=0.8](Grafici_Frobenius/Frobenius_ER_C08.png)
+![ER - C=1](Grafici_Frobenius/Frobenius_ER_C1.png)
 
-## Conclusione
-I risultati suggeriscono che l'influenza della costante di accoppiamento sulla norma di Frobenius varia significativamente a seconda della topologia della rete. Questo potrebbe avere implicazioni nell'interpretazione della connettività delle reti neurali in relazione ai parametri di soglia.
+#### 3. RGR Network
+![RGR - C=0.3](Grafici_Frobenius/Frobenius_RGR_C03.png)
+![RGR - C=0.5](Grafici_Frobenius/Frobenius_RGR_C05.png)
+![RGR - C=0.8](Grafici_Frobenius/Frobenius_RGR_C08.png)
+![RGR - C=1](Grafici_Frobenius/Frobenius_RGR_C1.png)
 
-## Note
-- I grafici sono stati generati automaticamente e salvati nella cartella `Grafici_Frobenius`.
-- Ogni grafico mostra la **Frobenius Metric** in funzione della soglia \( t \), limitata al range di interesse \( t \leq 1.5 \).
+#### 4. SBM Network
+![SBM - C=0.3](Grafici_Frobenius/Frobenius_SBM_C03.png)
+![SBM - C=0.5](Grafici_Frobenius/Frobenius_SBM_C05.png)
+![SBM - C=0.8](Grafici_Frobenius/Frobenius_SBM_C08.png)
+![SBM - C=1](Grafici_Frobenius/Frobenius_SBM_C1.png)
 
----
+## Discussion
+From the graphs, we observe that:
+- **[Observation 1]**: For instance, the SBM networks demonstrate a more pronounced variation in the Frobenius Metric with changes in the coupling constant.
+- **[Observation 2]**: ER networks tend to maintain a stable Frobenius Metric up to a specific threshold \( t \), regardless of the coupling constant.
 
-### 2. Aggiunta dei file al repository
+## Conclusion
+The results indicate that the effect of the coupling constant on the Frobenius norm varies significantly depending on the network topology. This has implications for interpreting network connectivity, particularly concerning thresholding parameters in network analysis using the SVISE method.
 
-Assicurati di avere tutti i grafici nella cartella `Grafici_Frobenius` e poi aggiungili al tuo repository GitHub insieme al file `README.md`. Esegui i seguenti comandi:
+## Notes
+- Graphs were generated automatically and saved in the `Grafici_Frobenius` folder.
+- Each graph shows the **Frobenius Metric** as a function of threshold \( t \), limited to the relevant range \( t \leq 1.5 \).
 
-```bash
-git add Grafici_Frobenius/*.png README.md
-git commit -m "Aggiunta dei risultati e del report con i grafici della Frobenius Metric"
-git push
