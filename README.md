@@ -1,4 +1,4 @@
-# Analysis of the Frobenius Metric on Neural Networks
+# Analysis of the Frobenius Metric on Kuramoto Networks
 
 ## Overview
 This project investigates the variation of the **Frobenius Metric** across different types of neural networks (SBM, ER, RGR, BA) based on threshold t values and different coupling constants (0.3, 0.5, 0.8, 1). The goal is to verify the effectiveness of the **SVISE method** on networks with a constant number of connections but different topologies.
