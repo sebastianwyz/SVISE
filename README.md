@@ -1,7 +1,7 @@
 # Analysis of the Frobenius Metric on Neural Networks
 
 ## Overview
-This project investigates the variation of the **Frobenius Metric** across different types of neural networks (SBM, ER, RGR, BA) based on threshold \( t \) values and coupling constants (0.3, 0.5, 0.8, 1). The goal is to verify the effectiveness of the **SVISE method** on networks with a constant number of connections but varying topologies.
+This project investigates the variation of the **Frobenius Metric** across different types of neural networks (SBM, ER, RGR, BA) based on threshold \( t \) values and different coupling constants (0.3, 0.5, 0.8, 1). The goal is to verify the effectiveness of the **SVISE method** on networks with a constant number of connections but different topologies.
 
 ## Data and Method
 Data was obtained by comparing estimated coefficient matrices and original adjacency matrices (scaled by the coupling constant). The **Frobenius Metric** was calculated by applying various thresholds to the estimated matrix and computing the normalized Frobenius norm of the difference between the thresholded estimated matrix and the modified adjacency matrix.
@@ -16,36 +16,24 @@ The coupling constants explored in this analysis are:
 ## Results
 
 ### Frobenius Metric Graphs
-Below are the graphs of the Frobenius Metric for each network type and coupling constant.
+Below are the graphs of the Frobenius Metric for each coupling constant \( K \). Each graph includes all network types (SBM, ER, RGR, BA) with different line styles.
 
-#### 1. BA Network
-![BA - C=0.3](Graphs/Frobenius_BA_C03.png)
-![BA - C=0.5](Graphs/Frobenius_BA_C05.png)
-![BA - C=0.8](Graphs/Frobenius_BA_C08.png)
-![BA - C=1](Graphs/Frobenius_BA_C1.png)
+#### 1. Coupling Constant \( K = 0.3 \)
+![K=0.3](Graphs/Frobenius_C0.3.png)
 
-#### 2. ER Network
-![ER - C=0.3](Graphs/Frobenius_ER_C03.png)
-![ER - C=0.5](Graphs/Frobenius_ER_C05.png)
-![ER - C=0.8](Graphs/Frobenius_ER_C08.png)
-![ER - C=1](Graphs/Frobenius_ER_C1.png)
+#### 2. Coupling Constant \( K = 0.5 \)
+![K=0.5](Graphs/Frobenius_C0.5.png)
 
-#### 3. RGR Network
-![RGR - C=0.3](Graphs/Frobenius_RGR_C03.png)
-![RGR - C=0.5](Graphs/Frobenius_RGR_C05.png)
-![RGR - C=0.8](Graphs/Frobenius_RGR_C08.png)
-![RGR - C=1](Graphs/Frobenius_RGR_C1.png)
+#### 3. Coupling Constant \( K = 0.8 \)
+![K=0.8](Graphs/Frobenius_C0.8.png)
 
-#### 4. SBM Network
-![SBM - C=0.3](Graphs/Frobenius_SBM_C03.png)
-![SBM - C=0.5](Graphs/Frobenius_SBM_C05.png)
-![SBM - C=0.8](Graphs/Frobenius_SBM_C08.png)
-![SBM - C=1](Graphs/Frobenius_SBM_C1.png)
+#### 4. Coupling Constant \( K = 1 \)
+![K=1](Graphs/Frobenius_C1.png)
 
 ## Discussion
 From the graphs, we observe that:
-- **[Observation 1]**: For instance, the SBM networks demonstrate a more pronounced variation in the Frobenius Metric with changes in the coupling constant.
-- **[Observation 2]**: ER networks tend to maintain a stable Frobenius Metric up to a specific threshold \( t \), regardless of the coupling constant.
+- **[Observation 1]**: For example, for \( K = 0.3 \), the Frobenius Metric varies more significantly among network types, indicating that SBM networks are particularly sensitive to this coupling constant.
+- **[Observation 2]**: As \( K \) increases, the Frobenius Metric stabilizes across network types, suggesting that higher coupling constants may reduce sensitivity to topology differences.
 
 ## Conclusion
 The results indicate that the effect of the coupling constant on the Frobenius norm varies significantly depending on the network topology. This has implications for interpreting network connectivity, particularly concerning thresholding parameters in network analysis using the SVISE method.
