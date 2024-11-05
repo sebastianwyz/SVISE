@@ -427,29 +427,7 @@ class SparsePolynomialSinusoidTfm(SparsePolynomialFeatures):
 
         '''
         '''
-        ###################################################     FITZHIGH-NAGUMO     ################################################################################
-        
-        labels = []
-        N = int(dim/2)
-        for i in range(1, N+1):
-            for var in ['u']: 
-                for power in range(1, 4):
-                    label = f"{var}{i}**{power}"
-                    labels.append(label)
 
-        for i in range(1, N+1):
-            for ver in ['v']: 
-                label = f"{ver}{i}"
-                labels.append(label)
-
-        for i in range(1, N+1):
-            for j in range(i+1, N+1):
-                #labels.append(f"sin(u{i}-u{j})")
-                labels.append(f"sin(v{i}-v{j})")
-        print(labels)
-        super().__init__(dim=len(labels), degree=degree, include_bias=True, input_labels=labels)
-
-        ###################################################################################################################################
         '''
         '''
         ############################################## LORENZ MATTO #######################################################################
@@ -531,31 +509,7 @@ class SparsePolynomialSinusoidTfm(SparsePolynomialFeatures):
         '''
         ################################################################################################################################## 
         
-        #####################################################   FITZHUGH-NAGUMO    #####################################################################
-        N = int(int(x.shape[-1])/2)
-        terms = []
-        for i in range(0, N):
-            for power in range(1, 4):
-                term =   x[...,i]**power       
-                terms.append(term.unsqueeze(-1))
-        for j in range(0,N):
-            term = x[...,N+j]
-            terms.append(term.unsqueeze(-1))
-        
-        #N = int(int(x.shape[-1])/2)
-        
-        #for i in range(0, N):
-        #    for j in range(i+1, N):
-                #term1 = torch.sin(x[..., 2 * i] - x[..., 2 * j])
-        #        term2 = torch.sin(x[..., 2 * i + 1] - x[..., 2 * j + 1])
-        #        #terms.append(term1.unsqueeze(-1))
-        #        terms.append(term2.unsqueeze(-1))
-        
-        x_in = torch.cat(terms, dim=-1)
 
-        return super().forward(x_in)
-
-        ################################################################################################################################## 
         
         
         '''
