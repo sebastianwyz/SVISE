@@ -6,12 +6,6 @@ This project investigates the variation of the **Frobenius Metric** across diffe
 ## Data and Method
 Data was obtained by comparing estimated coefficient matrices and original adjacency matrices (scaled by the coupling constant). The **Frobenius Metric** was calculated by applying various thresholds to the estimated matrix and computing the normalized Frobenius norm of the difference between the thresholded estimated matrix and the modified adjacency matrix.
 
-### Coupling Constants Analyzed
-The coupling constants explored in this analysis are:
-- **0.3**
-- **0.5**
-- **0.8**
-- **1**
 
 ## Results
 
@@ -19,16 +13,16 @@ The coupling constants explored in this analysis are:
 Below are the graphs of the Frobenius Metric for each coupling constant \( K \). Each graph includes all network types (SBM, ER, RGR, BA) with different line styles.
 
 #### 1. Coupling Constant \( K = 0.3 \)
-![K=0.3](Graphs/Frobenius_C0.3.png)
+<img src="Graphs/Frobenius_C0.3.png" alt="K=0.3" width="400"/>
 
 #### 2. Coupling Constant \( K = 0.5 \)
-![K=0.5](Graphs/Frobenius_C0.5.png)
+<img src="Graphs/Frobenius_C0.5.png" alt="K=0.5" width="400"/>
 
 #### 3. Coupling Constant \( K = 0.8 \)
-![K=0.8](Graphs/Frobenius_C0.8.png)
+<img src="Graphs/Frobenius_C0.8.png" alt="K=0.8" width="400"/>
 
 #### 4. Coupling Constant \( K = 1 \)
-![K=1](Graphs/Frobenius_C1.png)
+<img src="Graphs/Frobenius_C1.png" alt="K=1" width="400"/>
 
 ## Discussion
 From the graphs, we observe that:
@@ -41,4 +35,3 @@ The results indicate that the effect of the coupling constant on the Frobenius n
 ## Notes
 - Graphs were generated automatically and saved in the `Graphs` folder.
 - Each graph shows the **Frobenius Metric** as a function of threshold \( t \), limited to the relevant range \( t \leq 1.5 \).
-
