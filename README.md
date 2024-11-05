@@ -19,28 +19,28 @@ The coupling constants explored in this analysis are:
 Below are the graphs of the Frobenius Metric for each network type and coupling constant.
 
 #### 1. BA Network
-![BA - C=0.3](Grafici_Frobenius/Frobenius_BA_C03.png)
-![BA - C=0.5](Grafici_Frobenius/Frobenius_BA_C05.png)
-![BA - C=0.8](Grafici_Frobenius/Frobenius_BA_C08.png)
-![BA - C=1](Grafici_Frobenius/Frobenius_BA_C1.png)
+![BA - C=0.3](Graphs/Frobenius_BA_C03.png)
+![BA - C=0.5](Graphs/Frobenius_BA_C05.png)
+![BA - C=0.8](Graphs/Frobenius_BA_C08.png)
+![BA - C=1](Graphs/Frobenius_BA_C1.png)
 
 #### 2. ER Network
-![ER - C=0.3](Grafici_Frobenius/Frobenius_ER_C03.png)
-![ER - C=0.5](Grafici_Frobenius/Frobenius_ER_C05.png)
-![ER - C=0.8](Grafici_Frobenius/Frobenius_ER_C08.png)
-![ER - C=1](Grafici_Frobenius/Frobenius_ER_C1.png)
+![ER - C=0.3](Graphs/Frobenius_ER_C03.png)
+![ER - C=0.5](Graphs/Frobenius_ER_C05.png)
+![ER - C=0.8](Graphs/Frobenius_ER_C08.png)
+![ER - C=1](Graphs/Frobenius_ER_C1.png)
 
 #### 3. RGR Network
-![RGR - C=0.3](Grafici_Frobenius/Frobenius_RGR_C03.png)
-![RGR - C=0.5](Grafici_Frobenius/Frobenius_RGR_C05.png)
-![RGR - C=0.8](Grafici_Frobenius/Frobenius_RGR_C08.png)
-![RGR - C=1](Grafici_Frobenius/Frobenius_RGR_C1.png)
+![RGR - C=0.3](Graphs/Frobenius_RGR_C03.png)
+![RGR - C=0.5](Graphs/Frobenius_RGR_C05.png)
+![RGR - C=0.8](Graphs/Frobenius_RGR_C08.png)
+![RGR - C=1](Graphs/Frobenius_RGR_C1.png)
 
 #### 4. SBM Network
-![SBM - C=0.3](Grafici_Frobenius/Frobenius_SBM_C03.png)
-![SBM - C=0.5](Grafici_Frobenius/Frobenius_SBM_C05.png)
-![SBM - C=0.8](Grafici_Frobenius/Frobenius_SBM_C08.png)
-![SBM - C=1](Grafici_Frobenius/Frobenius_SBM_C1.png)
+![SBM - C=0.3](Graphs/Frobenius_SBM_C03.png)
+![SBM - C=0.5](Graphs/Frobenius_SBM_C05.png)
+![SBM - C=0.8](Graphs/Frobenius_SBM_C08.png)
+![SBM - C=1](Graphs/Frobenius_SBM_C1.png)
 
 ## Discussion
 From the graphs, we observe that:
@@ -51,6 +51,6 @@ From the graphs, we observe that:
 The results indicate that the effect of the coupling constant on the Frobenius norm varies significantly depending on the network topology. This has implications for interpreting network connectivity, particularly concerning thresholding parameters in network analysis using the SVISE method.
 
 ## Notes
-- Graphs were generated automatically and saved in the `Grafici_Frobenius` folder.
+- Graphs were generated automatically and saved in the `Graphs` folder.
 - Each graph shows the **Frobenius Metric** as a function of threshold \( t \), limited to the relevant range \( t \leq 1.5 \).
 
