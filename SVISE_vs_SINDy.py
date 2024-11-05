@@ -12,10 +12,8 @@ from svise.variationalsparsebayes.sparse_glm import SparsePolynomialSinusoidTfm
 from svise import quadrature
 from svise import odes
 from svise import sde_learning, sdeint
-from svise.utils import solve_least_squares
 import torch
 import torch.optim.lr_scheduler as lr_scheduler
-from torch.utils.data import DataLoader, TensorDataset
 from scipy.integrate import solve_ivp
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,29 +32,12 @@ import re
 import numpy as np
 from torch import threshold
 from svise import sde_learning, sdeint
-
-
-import matplotlib.pyplot as plt
 from matplotlib import rc
-import torch
-from torch.utils.data import DataLoader, TensorDataset
-from torchsde import sdeint as torchsdeint
 from tqdm import tqdm
-from svise.sde_learning import *
 from svise.sde_learning import SparsePolynomialSDE
-from svise.variationalsparsebayes.sparse_glm import SparsePolynomialSinusoidTfm
 from svise import quadrature
 from svise import odes
-from svise import sde_learning, sdeint
 from svise.utils import solve_least_squares
-import torch
-import torch.optim.lr_scheduler as lr_scheduler
-from torch.utils.data import DataLoader, TensorDataset
-from scipy.integrate import solve_ivp
-import numpy as np
-import matplotlib.pyplot as plt
-import time
-from time import perf_counter as pfc
 import os
 import pathlib
 import argparse
@@ -66,26 +47,48 @@ from sklearn.preprocessing import StandardScaler
 
 from svise import sde_learning, sdeint
 
-folder_path = "./SVISE_vs_SINDy/SBM/01"
+folder_path = "./SVISE_vs_SINDy/CORRETTO/MEGA CORRETTO/ER/03"
 if not os.path.exists(folder_path):
     os.makedirs(folder_path)
 rc('text', usetex=False)
 torch.set_default_dtype(torch.float64)
-N=32 #NUMERO DI NODI
-num_dati= 510
 
-n=2
-SW=nx.barabasi_albert_graph(N,n)  #### è un BA
+N = 20  # Numero di nodi
+n = 2   # Numero di gruppi
+p=0.2
+# Assumendo che vuoi due gruppi di dimensione uguale
+sizes = [N // n] * n  # Crea una lista con due gruppi di dimensione 10
+
+
+
+# Crea il modello di blocco stocastico
+#SW = nx.stochastic_block_model(sizes, p)
+radius = 0.35  # Raggio di connessione
+
+SW = nx.random_geometric_graph(N, radius)
+
+# Converti in array numpy
+#A = nx.to_numpy_array(SW)
 
 
 
 
-#A = np.loadtxt("SBM.adj")
-#A=nx.to_numpy_array(SW)
+# Crea il grafo geometrico casuale
+A = nx.random_geometric_graph(N, radius)
+
+
+A = np.loadtxt("C:/Users/teresa i robert/Desktop/Tesi/svise-main/svise-main/experiments/8_tutorial_preda_cacciatore/RetiNeurali/SVISE_vs_SINDy/CORRETTO/MEGA CORRETTO/ER/matrice_er.txt")
+
+file_path = os.path.join(folder_path, "matrice_er.txt")
+
+# Salva la matrice in un file di testo
+np.savetxt(file_path, A, fmt='%d')  # Usa '%.4f' se vuoi salvare con 4 cifre decimali
+
+
 #A = torch.tensor(A, dtype=torch.float32)  
 ############# BA ##################
 #A = np.loadtxt("C:/Users/teresa i robert/Desktop/Tesi/svise-main/svise-main/experiments/8_tutorial_preda_cacciatore/RetiNeurali/BA.adj")
-A = np.loadtxt("/home/ubuntu/svise-main/experiments/8_tutorial_preda_cacciatore/RetiNeurali/SBM.adj")
+#A = np.loadtxt("/home/ubuntu/svise-main/experiments/8_tutorial_preda_cacciatore/RetiNeurali/SBM.adj")
 
 ############# SW ##################
 #A = np.loadtxt("C:/Users/teresa i robert/Desktop/Tesi/svise-main/svise-main/experiments/8_tutorial_preda_cacciatore/RetiNeurali/SW.adj")
@@ -95,9 +98,9 @@ A = np.loadtxt("/home/ubuntu/svise-main/experiments/8_tutorial_preda_cacciatore/
 #A = np.loadtxt("C:/Users/teresa i robert/Desktop/Tesi/svise-main/svise-main/experiments/8_tutorial_preda_cacciatore/RetiNeurali/GRG.adj")
 #A=nx.to_numpy_array(SW)
 
-plt.figure(figsize=(3, 3))  # Imposta la dimensione del grafico
-plt.imshow(A, cmap='inferno')  # Usa la colormap 'inferno'
-plt.colorbar()  # Aggiungi una barra dei colori per mostrare la scala dei valori
+plt.figure(figsize=(3, 3))  
+plt.imshow(A, cmap='inferno')  
+plt.colorbar()  
 plt.title('Matrice A')
 plt.xlabel('Indice ')
 file_path = f"{folder_path}/matrice A.png"
@@ -112,8 +115,8 @@ torch.manual_seed(0)
 def lorenz(sigma, rho, beta, t, x):
     
     dtheta = torch.zeros_like(x) 
-    Ku=0.1
-    u = [
+    Ku=0.3
+    u = [           # I used this set of proper frequencies for every case
     0.5539, -0.3248, -0.8373, 
     0.2874, -0.4956, 0.6284, -0.7612,
     0.4321, -0.2134, 0.9876, -0.6543,
@@ -129,12 +132,12 @@ def lorenz(sigma, rho, beta, t, x):
         w[i] = 5*u[i]
 
     for i in range(N):
-        dtheta[...,i] = w[i] + Ku / N * sum(A[i, j] * torch.sin(x[...,j] - x[...,i]) for j in range(N) if i != j)
+        dtheta[...,i] = w[i] + Ku * sum(A[i, j] * torch.sin(x[...,j] - x[...,i]) for j in range(N) if i != j)
     return dtheta
 
         
 
-class Lorenz:
+class Lorenz:  # nothing to do with lorenz
     noise_type = "diagonal"
     sde_type = "ito"
 
@@ -149,8 +152,7 @@ class Lorenz:
 
         return self.diff
 
-#std = 1e-2
-tempo = [8]  # 4 - 8 - 16
+tempo = [8]  
 rms_means = []
 sigma_means = []
 rms_means_sindy = []
@@ -160,7 +162,7 @@ sigma_means_1 = []
 rms_means_sindy_1 = []
 sigma_means_sindy_1 = []
 for tempo in tempo:
-    SNR = [100]   # 20 - 40 - 100
+    SNR = [100]
     total_sum_final_values_10 = []
     total_sum_final_values_20 = []
     total_sum_final_values_100 = []
@@ -238,7 +240,7 @@ for tempo in tempo:
             num_dati = 256
         if tempo ==8:
             m=2
-            num_dati = 512
+            num_dati = 512 
         if tempo ==16:
             m=4
             num_dati = 1024
@@ -260,37 +262,30 @@ for tempo in tempo:
         for i in range(1, N + 1):
             input_labels.append(f"theta_{i}")
 
-        # Calcolare le combinazioni evitando combinazioni ridondanti
         for i in range(N):
             for j in range(i  , N):
-                if i!=j:  # Inizia j da i + 1 per evitare duplicati e autoreferenze
+                if i!=j: 
                     combined_sin_labels.append(f"sin({input_labels[i]} - {input_labels[j]})")
         #input_labels += combined_sin_labels 
         input_labels = combined_sin_labels
-
-        #input_labels = ["theta_1"]
-
-        #print("input labels", input_labels)
-        #print("Dimensioni di train_y:", data["train_y"][:, [1, 2]].shape)
-        #print("Dimensioni di G:", G.shape)
 
 
         correct_terms_strings = []
         for i in range(A.shape[0]):
             terms = set()
             for j in range(A.shape[1]):
-                if A[i, j] == 1 and i < j:  # Check only one connection per pair (i < j)
+                if A[i, j] == 1 and i < j:  
                     terms.add(f"sin(theta_{i+1} - theta_{j+1})")
-                elif A[i, j] == 1 and i > j:  # Add the inverse term if not considered in i < j
+                elif A[i, j] == 1 and i > j:  
                     terms.add(f"sin(theta_{j+1} - theta_{i+1})")
             correct_terms_strings.append(terms)
             print("correct terms for node:", i ,correct_terms_strings[i])
 
 
         t_span = (data["train_t"].min(), data["train_t"].max())
-        d = N # dimension of the latent state
-        degree = 1 # degree of polynomial terms
-        n_reparam_samples = 128 #len(data["train_t"])  #128  how many reparam samples
+        d = N 
+        degree = 1 
+        n_reparam_samples = 128 #len(data["train_t"])  # how many reparam samples
         var = (torch.ones(d) * data["std"]) ** 2
         num_data = len(data["train_t"])
 
@@ -303,9 +298,7 @@ for tempo in tempo:
             num_meas=d, 
             measurement_noise=var,
             train_t=data["train_t"], 
-            #train_t=data["t"],
             train_x=data["train_y"],
-            #train_x=data["y"],
             input_labels=input_labels
         )
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -315,10 +308,10 @@ for tempo in tempo:
 
         batch_size = int(min(128, len(data["train_t"])))
         #batch_size = len(data["train_t"])  
-        num_iters = 200 #40000
-        transition_iters = 50
+        num_iters = 2000
+        transition_iters = 500
         num_mc_samples = int(min(128, len(data["train_t"])))
-        summary_freq = 25
+        summary_freq = 100
         scheduler_freq = transition_iters // 2
         lr = 1e-2
 
@@ -427,6 +420,7 @@ for tempo in tempo:
         ########################################## forward 1s ##################################################
         state_truee = dizionario(num_dati, tempo, 1)
         ######################################################      #SINDY    #############################################################################################
+        '''
         def sin_diff(x, y):
             return np.sin(x - y)
 
@@ -479,6 +473,7 @@ for tempo in tempo:
         dtt = state_truee["valid_t"].detach().cpu().numpy()
         #simulated_data = model.simulate(y0, dtt)
         '''
+        
         ####################################################################################################################################################
         K=32        #num_dati
         with torch.no_grad():
@@ -499,14 +494,14 @@ for tempo in tempo:
 
 
         fig, axs = plt.subplots(2,1, figsize=(6,7))
-        axs[1].plot(state_truee["train_t"].numpy(), predictions ,color="C2")
-        axs[1].plot(state_truee["valid_t"].numpy(), simulated_data ,color="C2")
+        ###axs[1].plot(state_truee["train_t"].numpy(), predictions ,color="C2")
+        ###axs[1].plot(state_truee["valid_t"].numpy(), simulated_data ,color="C2")
 
         for i in range(1):
             axs[0].plot(state_truee["train_t"].numpy(), mu.numpy()[:, i], 'C0', label='state estimate' if i == 0 else "_nolegend_")
 
-        axs[0].plot(state_truee["valid_t"].numpy(), simulated_data[:, 0] , color="#8B0000", label='SINDy forecast')
-        axs[0].plot(state_truee["train_t"].numpy(), predictions[:, 0] , color="C2", label='SINDy estimate')
+        ###axs[0].plot(state_truee["valid_t"].numpy(), simulated_data[:, 0] , color="#8B0000", label='SINDy forecast')
+        ###axs[0].plot(state_truee["train_t"].numpy(), predictions[:, 0] , color="C2", label='SINDy estimate')
 
 
         for i in range(1):
@@ -540,10 +535,10 @@ for tempo in tempo:
         for j in range(N):
             axs[1].fill_between(state_truee["train_t"].numpy(), lb[:,j].numpy(), ub[:,j].numpy(), alpha=0.2, color="C0")
             axs[1].fill_between(t_eval.numpy(), pred_lb[:,j].numpy(), pred_ub[:,j].numpy(), alpha=0.2, color="C1")
-        sindy_handle = Line2D([], [], color='green', linestyle='-', label='SINDy estimate')
+        ###sindy_handle = Line2D([], [], color='green', linestyle='-', label='SINDy estimate')
         handles, labels = axs[1].get_legend_handles_labels()
-        handles.append(sindy_handle)
-        labels.append('Sindy')
+        ###handles.append(sindy_handle)
+        ###labels.append('Sindy')
         # Aggiungi la legenda con il handle personalizzato
         axs[1].set_xlabel("Indices of Evaluated Points")
         axs[1].set_ylabel("Latent state values")
@@ -573,23 +568,23 @@ for tempo in tempo:
         for i in range(num_elements):
             residuals = pred_mean_1[i] - true_values[i]
             true_values_np = true_values.detach().cpu().numpy()
-            residuals_sindy = simulated_data[i] - true_values_np[i]
+            ###residuals_sindy = simulated_data[i] - true_values_np[i]
 
             squared_residuals = residuals ** 2
-            squared_residuals_sindy = residuals_sindy ** 2
+            ###squared_residuals_sindy = residuals_sindy ** 2
             mean_squared_error = squared_residuals.mean()
-            mean_sqared_error_sindy = squared_residuals_sindy.mean()
-            mean_squared_error_sindy = np.float64(mean_sqared_error_sindy)  # some_value è un esempio
-            mean_squared_error_sindy_tensor = torch.tensor(mean_squared_error_sindy, dtype=torch.float64)
+            ###mean_sqared_error_sindy = squared_residuals_sindy.mean()
+            ###mean_squared_error_sindy = np.float64(mean_sqared_error_sindy)  # some_value è un esempio
+            ###mean_squared_error_sindy_tensor = torch.tensor(mean_squared_error_sindy, dtype=torch.float64)
             rmse_1 = torch.sqrt(mean_squared_error)
-            rmse_sindy_1 = torch.sqrt(mean_squared_error_sindy_tensor)
+            ###rmse_sindy_1 = torch.sqrt(mean_squared_error_sindy_tensor)
             rms_1[i] = rmse_1
-            rms_sindy_1[i] = rmse_sindy_1
+            ###rms_sindy_1[i] = rmse_sindy_1
             uncertainty_1[i] = squared_residuals.std() / torch.sqrt(torch.tensor(2 * squared_residuals.numel()).float())
-            uncertainty_sindy_1[i] = squared_residuals_sindy.std() / torch.sqrt(torch.tensor(2 * squared_residuals_sindy.size).float())
+            ###uncertainty_sindy_1[i] = squared_residuals_sindy.std() / torch.sqrt(torch.tensor(2 * squared_residuals_sindy.size).float())
         
         plt.figure(figsize=(10, 5))
-        plt.errorbar(x=np.arange(num_elements), y=rms_sindy_1, yerr=uncertainty_sindy_1, fmt='-o', label='RMS SINDy', color='red', ecolor='red', capsize=5)
+        ###plt.errorbar(x=np.arange(num_elements), y=rms_sindy_1, yerr=uncertainty_sindy_1, fmt='-o', label='RMS SINDy', color='red', ecolor='red', capsize=5)
         plt.errorbar(x=np.arange(num_elements), y=rms_1, yerr=uncertainty_1, fmt='-o', label='RMS SVISE', color='blue', ecolor='blue', capsize=5)
         plt.xlabel('Indice Temporale')
         plt.ylabel('RMS')
@@ -603,15 +598,15 @@ for tempo in tempo:
         plt.savefig(file_path, bbox_inches='tight')
         rms_means_1.append(rms_1)
         sigma_means_1.append(uncertainty_1)
-        rms_means_sindy_1.append(rms_sindy_1)
-        sigma_means_sindy_1.append(uncertainty_sindy_1)
+        ###rms_means_sindy_1.append(rms_sindy_1)
+        ###sigma_means_sindy_1.append(uncertainty_sindy_1)
 
 
         file_nome = f"{folder_path}/Y_1s_{tempo}_{SNR}.txt"
         #np.save(f"{folder_path}/.npy", total_sum_final_values_100_valori)
 
-        np.savetxt(file_nome, np.column_stack((rms_1, uncertainty_1, rms_sindy_1, uncertainty_sindy_1)), comments='', fmt='%f')
-        '''
+        ###np.savetxt(file_nome, np.column_stack((rms_1, uncertainty_1, rms_sindy_1, uncertainty_sindy_1)), comments='', fmt='%f')
+        
         #####################################################################################################################################################
 
         RMS = []
@@ -641,7 +636,7 @@ for tempo in tempo:
         #y0 = state_true["train_y"]
         #print(x0)
         dtt = state_true["valid_t"].detach().cpu().numpy()
-        simulated_data = model.simulate(y0, dtt)
+        ###simulated_data = model.simulate(y0, dtt)
 
         K=32  #num_dati
         with torch.no_grad():
@@ -660,64 +655,6 @@ for tempo in tempo:
             pred_lb = pred_mean - 2 * xs.std(1) 
             pred_ub = pred_mean + 2 * xs.std(1) 
 
-
-        fig, axs = plt.subplots(2,1, figsize=(6,7))
-
-        for i in range(1):
-            axs[0].plot(state_true["train_t"].numpy(), mu.numpy()[:, i], 'C0', label='state estimate' if i == 0 else "_nolegend_")
-        #axs[0].plot(state_truee["train_t"].numpy(), predictions[:, i] , color="C2", label='SINDy estimate')
-        axs[0].plot(state_true["valid_t"].numpy(), simulated_data[:, i] , color="#8B0000", label='SINDy forecast')
-
-
-        for i in range(1):
-            axs[0].plot(state_true["t"].numpy(), state_true["true_state"].numpy()[:, i], 'k--', label='true state' if i == 0 else "_nolegend_")
-        for i in range(1):
-            axs[0].plot(t_eval.numpy(), pred_mean.numpy()[:, i], "C1", label='forecast' if i == 0 else "_nolegend_")
-
-
-
-        for j in range(1):
-            axs[0].fill_between(state_true["train_t"].numpy(), lb[:,j].numpy(), ub[:,j].numpy(), alpha=0.2, color="C0")
-            axs[0].fill_between(t_eval.numpy(), pred_lb[:,j].numpy(), pred_ub[:,j].numpy(), alpha=0.2, color="C1")
-
-        axs[0].set_xlabel("time")
-        axs[0].set_ylabel("latent state")
-        axs[0].legend()
-        #ax.set_ylim(-1, 10)
-
-        axs[1].plot(state_true["valid_t"].numpy(), simulated_data, 'k--',color="C2")
-        #axs[1].plot(state_truee["train_t"].numpy(), predictions, 'k--',color="C2")
-
-        for i in range(N):
-            axs[1].plot(state_true["train_t"].numpy(), mu.numpy()[:, i], 'C0', label='state estimate' if i == 0 else "_nolegend_")
-
-
-        for i in range(N):
-            axs[1].plot(state_true["t"].numpy(), state_true["true_state"].numpy()[:, i], 'k--', label='true state' if i == 0 else "_nolegend_")
-        for i in range(N):
-            axs[1].plot(t_eval.numpy(), pred_mean.numpy()[:, i], "C1", label='forecast' if i == 0 else "_nolegend_")
-
-
-
-        for j in range(N):
-            axs[1].fill_between(state_true["train_t"].numpy(), lb[:,j].numpy(), ub[:,j].numpy(), alpha=0.2, color="C0")
-            axs[1].fill_between(t_eval.numpy(), pred_lb[:,j].numpy(), pred_ub[:,j].numpy(), alpha=0.2, color="C1")
-
-        sindy_handle = Line2D([], [], color='green', linestyle='-', label='SINDy estimate')
-        handles, labels = axs[1].get_legend_handles_labels()
-        handles.append(sindy_handle)
-        labels.append('SINDy')
-        # Aggiungi la legenda con il handle personalizzato
-        axs[1].set_xlabel("Indices of Evaluated Points")
-        axs[1].set_ylabel("Latent state values")
-        axs[1].legend(handles, labels)
-        axs[0].grid(True)
-        axs[1].grid(True)
-
-        # Definisci il nome del file includendo parametri dinamici
-        file_path = f"{folder_path}/andamenti_{tempo}_{num_dati}_{SNR}.png"
-        plt.savefig(file_path, bbox_inches='tight')
-
         #########################################################################################################
         
         true_values = state_true["valid_state"]
@@ -726,32 +663,32 @@ for tempo in tempo:
         num_elements = true_values.shape[0]
 
         rms = np.zeros(num_elements)
-        rms_sindy = np.zeros(num_elements)
+        ###rms_sindy = np.zeros(num_elements)
         uncertainty = np.zeros(num_elements)
-        uncertainty_sindy = np.zeros(num_elements)
+        ###uncertainty_sindy = np.zeros(num_elements)
         #x_train = state_true["valid_state"].detach().cpu().numpy()
         #x0 = x_train[0, :]  # Condizioni iniziali (primo punto di dati)
 
         for i in range(num_elements):
             residuals = pred_mean[i] - true_values[i]
             true_values_np = true_values.detach().cpu().numpy()
-            residuals_sindy = simulated_data[i] - true_values_np[i]
+            ###residuals_sindy = simulated_data[i] - true_values_np[i]
             squared_residuals = residuals ** 2
-            squared_residuals_sindy = residuals_sindy ** 2
+            ###squared_residuals_sindy = residuals_sindy ** 2
             mean_squared_error = squared_residuals.mean()
-            mean_sqared_error_sindy = squared_residuals_sindy.mean()
-            mean_squared_error_sindy = np.float64(mean_sqared_error_sindy)  # some_value è un esempio
-            mean_squared_error_sindy_tensor = torch.tensor(mean_squared_error_sindy, dtype=torch.float64)
+            ###mean_sqared_error_sindy = squared_residuals_sindy.mean()
+            ###mean_squared_error_sindy = np.float64(mean_sqared_error_sindy)  # some_value è un esempio
+            ###mean_squared_error_sindy_tensor = torch.tensor(mean_squared_error_sindy, dtype=torch.float64)
             rmse = torch.sqrt(mean_squared_error)
-            rmse_sindy = torch.sqrt(mean_squared_error_sindy_tensor)
+            ###rmse_sindy = torch.sqrt(mean_squared_error_sindy_tensor)
             rms[i] = rmse
-            rms_sindy[i] = rmse_sindy
+            ###rms_sindy[i] = rmse_sindy
             uncertainty[i] = squared_residuals.std() / torch.sqrt(torch.tensor(2 * squared_residuals.numel()).float())
-            uncertainty_sindy[i] = squared_residuals_sindy.std() / torch.sqrt(torch.tensor(2 * squared_residuals_sindy.size).float())
+            ###uncertainty_sindy[i] = squared_residuals_sindy.std() / torch.sqrt(torch.tensor(2 * squared_residuals_sindy.size).float())
 
         x=np.arange(num_elements)  ###############################
         plt.figure(figsize=(10, 5))
-        plt.errorbar(x=x, y=rms_sindy, yerr=uncertainty_sindy, fmt='-o', label='RMS SINDy', color='red', ecolor='red', capsize=5)
+        ###plt.errorbar(x=x, y=rms_sindy, yerr=uncertainty_sindy, fmt='-o', label='RMS SINDy', color='red', ecolor='red', capsize=5)
         plt.errorbar(x=x, y=rms, yerr=uncertainty, fmt='-o', label='RMS SVISE', color='blue', ecolor='blue', capsize=5)
         plt.xlabel('Indice Temporale')
         plt.ylabel('RMS')
@@ -766,18 +703,14 @@ for tempo in tempo:
 
         file_nome = f"{folder_path}/Y_{tempo}_{SNR}.txt"
 
-        np.savetxt(file_nome, np.column_stack((rms, uncertainty, rms_sindy, uncertainty_sindy)), comments='', fmt='%f')
+        ###np.savetxt(file_nome, np.column_stack((rms, uncertainty, rms_sindy, uncertainty_sindy)), comments='', fmt='%f')
         
         #########################################################################################################
-        # Codice per generare il plot va qui
-        # plt.plot(...) o altre funzioni di plotting
 
-        # Salva il plot nel file
-        #plt.savefig(file_path)
         rms_means.append(rms)
         sigma_means.append(uncertainty)
-        rms_means_sindy.append(rms_sindy)
-        sigma_means_sindy.append(uncertainty_sindy)
+        ###rms_means_sindy.append(rms_sindy)
+        ###sigma_means_sindy.append(uncertainty_sindy)
 
 
         # Assumi che queste variabili siano già definite
@@ -836,7 +769,7 @@ for tempo in tempo:
                                 adjacency_matrix[index_j, index_i] = 1
             sindy_coeff = adjacency_matrix
             return sindy_coeff
-
+        
         def rebuild_adjacency_matrix(calculated_terms, size):
             new_A = np.zeros((size, size))
             for term, coeff in calculated_terms.items():
@@ -857,7 +790,6 @@ for tempo in tempo:
                         else:
                             new_A[j, i] = 1
 
-                        #print(f"Term {term} with coeff {coeff} added at positions ({i},{j}) and ({j},{i})")
             return new_A
         
         def rebuild_adjacency_matrix_coeff(calculated_terms, size):
@@ -955,7 +887,7 @@ for tempo in tempo:
             #print("calculated", len(calculated_terms))
             return matched_count / len(correct_terms) if len(correct_terms) > 0 else 0
         ##########################################       ricostruzione matrice sindy        ###############################################
-        
+        '''
         coefficients = model.coefficients()
         feature_names = model.get_feature_names()
         # Assumiamo che ci sia N oscillatori
@@ -1018,6 +950,7 @@ for tempo in tempo:
 
         #print("Matrice di adiacenza ricostruita:")
         #print(sindy)
+        
         ####################################################################################################################################
         plt.figure(figsize=(3, 3))  # Imposta la dimensione del grafico
         plt.imshow(sindy, cmap='grey')  # Usa la colormap 'inferno'
@@ -1038,7 +971,7 @@ for tempo in tempo:
         # Salva il plot nel file
         plt.savefig(file_path)
         plt.close()
-
+        '''
         accuracies = []
         accuratezze = []
         Forbenius_metric = []
@@ -1050,14 +983,16 @@ for tempo in tempo:
         reconstructed_matrices_coeff = []
         correct_terms_strings = generate_correct_terms_strings(A)
         #print(sde_prior_feature_names)
+        t_values = np.arange(0, 6.01, 0.01)
+
         max_valori = np.max(t_values)
 
         for t in t_values:
             threshold = t 
             Forbenius_metric = []
             Forbenius_coeff = []
-            sindy = rebuild_adjacency_matrix_sindy(coefficients)
-            sindy_coeff = rebuild_adjacency_matrix_sindy_coeff(coefficients)
+            ###sindy = rebuild_adjacency_matrix_sindy(coefficients)
+            ###sindy_coeff = rebuild_adjacency_matrix_sindy_coeff(coefficients)
 
             for node_index, term_string in enumerate(sde_prior_feature_names):
                 calculated_terms = parse_terms(term_string, threshold)
@@ -1094,7 +1029,7 @@ for tempo in tempo:
                 
 
 
-
+        
         # Calculate the average accuracy
             mean_accuracy = np.mean(accuracies)
             mean_accuratezza = np.mean(accuratezze)
@@ -1109,9 +1044,9 @@ for tempo in tempo:
 
             finale = np.abs((A)-np.abs(reconstructed_A))
             finale_coeff = np.abs((A)-np.abs(reconstructed_A_coeff))
-            finale_sindy = np.abs((A)-np.abs(sindy))
+            ###finale_sindy = np.abs((A)-np.abs(sindy))
             #print("finale sindy",finale_sindy)
-            finale_coeff_sindy = np.abs((A)-np.abs(sindy_coeff))
+            ###finale_coeff_sindy = np.abs((A)-np.abs(sindy_coeff))
 
             abs_matrices_coeff = [(matrix) for matrix in reconstructed_matrices_coeff]
             final_matrix_coeff = np.sum(abs_matrices_coeff, axis=0)
@@ -1140,33 +1075,34 @@ for tempo in tempo:
                 for j in range(N):
                     total_sum_finale += finale_coeff[i, j] ** 2
 
-            total_sum_final_sindy = 0.0
-            for i in range(N):
-                for j in range(N):
-                    #if abs(finale_sindy[i, j]) > t:
-                        total_sum_final_sindy += finale_sindy[i, j] ** 2
+            t###otal_sum_final_sindy = 0.0
+            ###for i in range(N):
+            ###    for j in range(N):
+            ###        #if abs(finale_sindy[i, j]) > t:
+            ###            total_sum_final_sindy += finale_sindy[i, j] ** 2
             #print("Somma dei quadrati degli elementi di finale_sindy (filtrati):", total_sum_final_sindy)
 
             # Calcolo della somma dei quadrati degli elementi della matrice delle differenze finale_coeff_sindy, considerando solo i valori > t
-            total_sum_finale_sindy = 0.0
-            for i in range(N):
-                for j in range(N):
-                    #if abs(finale_coeff_sindy[i, j]) > t:
-                        total_sum_finale_sindy += finale_coeff_sindy[i, j] ** 2
+
+            ###total_sum_finale_sindy = 0.0
+            ###for i in range(N):
+            ###    for j in range(N):
+            ###        #if abs(finale_coeff_sindy[i, j]) > t:
+            ###            total_sum_finale_sindy += finale_coeff_sindy[i, j] ** 2
             #print("Somma dei quadrati degli elementi di finale_coeff_sindy (filtrati):", total_sum_finale_sindy)
 
             #print("Somma dei quadrati degli elementi della matrice delle differenze:", total_sum_finale)
             Forbenius_metric = total_sum_final/total_sum_A
             Forbenius_coeff = total_sum_finale/total_sum_A
 
-            Forbenius_metric_sindy = total_sum_final_sindy/total_sum_A
-            Forbenius_coeff_sindy = total_sum_finale_sindy/total_sum_A
+            ###Forbenius_metric_sindy = total_sum_final_sindy/total_sum_A
+            ###Forbenius_coeff_sindy = total_sum_finale_sindy/total_sum_A
 
             total_sum_final_values.append(Forbenius_metric)
             total_sum_finale_values.append(Forbenius_coeff)
 
-            total_sum_final_values_sindy.append(Forbenius_metric_sindy)
-            total_sum_finale_values_sindy.append(Forbenius_coeff_sindy)
+            ###total_sum_final_values_sindy.append(Forbenius_metric_sindy)
+            ###total_sum_finale_values_sindy.append(Forbenius_coeff_sindy)
 
             rec = torch.tensor(finale, dtype=torch.float32)
             rece = torch.tensor(finale_coeff, dtype=torch.float32)
@@ -1202,34 +1138,35 @@ for tempo in tempo:
             if SNR == 10:
                 total_sum_final_values_10.append(Forbenius_metric)
                 total_sum_finale_values_10.append(Forbenius_coeff)
-                total_sum_final_values_10_sindy.append(Forbenius_metric_sindy)
-                total_sum_finale_values_10_sindy.append(Forbenius_coeff_sindy)
+                ###total_sum_final_values_10_sindy.append(Forbenius_metric_sindy)
+                ###total_sum_finale_values_10_sindy.append(Forbenius_coeff_sindy)
                 if t == max_valori:
                     np.save(f"{folder_path}/total_sum_final_values_10.npy", total_sum_final_values_10)
                     np.save(f"{folder_path}/total_sum_finale_values_10.npy", total_sum_finale_values_10)
-                    np.save(f"{folder_path}/total_sum_final_values_10_sindy.npy", total_sum_final_values_10_sindy)
-                    np.save(f"{folder_path}/total_sum_finale_values_10_sindy.npy", total_sum_finale_values_10_sindy) 
+                    ###np.save(f"{folder_path}/total_sum_final_values_10_sindy.npy", total_sum_final_values_10_sindy)
+                    ###np.save(f"{folder_path}/total_sum_finale_values_10_sindy.npy", total_sum_finale_values_10_sindy) 
             if SNR ==20:
                 total_sum_final_values_20.append(Forbenius_metric)
                 total_sum_finale_values_20.append(Forbenius_coeff)
-                total_sum_final_values_20_sindy.append(Forbenius_metric_sindy)
-                total_sum_finale_values_20_sindy.append(Forbenius_coeff_sindy) 
+                ###total_sum_final_values_20_sindy.append(Forbenius_metric_sindy)
+                ###total_sum_finale_values_20_sindy.append(Forbenius_coeff_sindy) 
                 if t == max_valori:
                     np.save(f"{folder_path}/total_sum_final_values_20.npy", total_sum_final_values_20)
                     np.save(f"{folder_path}/total_sum_finale_values_20.npy", total_sum_finale_values_20)
-                    np.save(f"{folder_path}/total_sum_final_values_20_sindy.npy", total_sum_final_values_20_sindy)
-                    np.save(f"{folder_path}/total_sum_finale_values_20_sindy.npy", total_sum_finale_values_20_sindy) 
+                    ###np.save(f"{folder_path}/total_sum_final_values_20_sindy.npy", total_sum_final_values_20_sindy)
+                    ###np.save(f"{folder_path}/total_sum_finale_values_20_sindy.npy", total_sum_finale_values_20_sindy) 
             if SNR == 100:
                 total_sum_final_values_100.append(Forbenius_metric)
                 total_sum_finale_values_100.append(Forbenius_coeff)
-                total_sum_final_values_100_sindy.append(Forbenius_metric_sindy)
-                total_sum_finale_values_100_sindy.append(Forbenius_coeff_sindy) 
+                ###total_sum_final_values_100_sindy.append(Forbenius_metric_sindy)
+                ###total_sum_finale_values_100_sindy.append(Forbenius_coeff_sindy) 
                 if t == max_valori:
                     np.save(f"{folder_path}/total_sum_final_values_100.npy", total_sum_final_values_100)
                     np.save(f"{folder_path}/total_sum_finale_values_100.npy", total_sum_finale_values_100)
-                    np.save(f"{folder_path}/total_sum_final_values_100_sindy.npy", total_sum_final_values_100_sindy)
-                    np.save(f"{folder_path}/total_sum_finale_values_100_sindy.npy", total_sum_finale_values_100_sindy) 
+                    ###np.save(f"{folder_path}/total_sum_final_values_100_sindy.npy", total_sum_final_values_100_sindy)
+                    ###np.save(f"{folder_path}/total_sum_finale_values_100_sindy.npy", total_sum_finale_values_100_sindy) 
         del sde  # Elimina l'oggetto sde
+        
         import gc  # Importa il modulo del garbage collector
         gc.collect()  # Chiama il garbage collector per liberare la memoria
         colors = inferno(np.linspace(0.2, 0.8, 2)) 
@@ -1237,7 +1174,7 @@ for tempo in tempo:
         plt.figure(figsize=(12, 6))
         plt.subplot(1, 2, 1)
         plt.plot(t_values, total_sum_final_values, label='Frobenius metric SVISE',color=colors[0], linewidth=2)
-        plt.plot(t_values, total_sum_final_values_sindy, label='Frobenius metric SINDy',color=colors[1], linewidth=2)
+        ###plt.plot(t_values, total_sum_final_values_sindy, label='Frobenius metric SINDy',color=colors[1], linewidth=2)
         plt.title('Frobenius-metric')
         plt.xlabel('t')
         plt.ylabel('Frobenius-metric')
@@ -1246,7 +1183,7 @@ for tempo in tempo:
 
         plt.subplot(1, 2, 2)
         plt.plot(t_values, total_sum_finale_values, label='Frobenius coeff SVISE', color=colors[0], linewidth=2)
-        plt.plot(t_values, total_sum_finale_values_sindy, label='Frobenius coeff SINDy', color=colors[1], linewidth=2)
+        ###plt.plot(t_values, total_sum_finale_values_sindy, label='Frobenius coeff SINDy', color=colors[1], linewidth=2)
         plt.title('Frobenius-metric-coeff vs t')
         plt.xlabel('t')
         plt.ylabel('Frobenius-metric-coeff')
@@ -1266,15 +1203,15 @@ for tempo in tempo:
         #plt.show()
 #################################################################
 
-        max_coefficient = np.max(np.abs(coefficients))
-        t_valori = np.arange(0, max_coefficient, 0.1)
+        ###max_coefficient = np.max(np.abs(coefficients))
+        t_valori = np.arange(0, 16, 0.1)
         max_valori = np.max(t_valori)
         for t in t_valori:
             threshold = t 
             Forbenius_metric = []
             Forbenius_coeff = []
-            sindy = rebuild_adjacency_matrix_sindy(coefficients)
-            sindy_coeff = rebuild_adjacency_matrix_sindy_coeff(coefficients)
+            ###sindy = rebuild_adjacency_matrix_sindy(coefficients)
+            ###sindy_coeff = rebuild_adjacency_matrix_sindy_coeff(coefficients)
 
             for node_index, term_string in enumerate(sde_prior_feature_names):
                 calculated_terms = parse_terms(term_string, threshold)
@@ -1293,9 +1230,9 @@ for tempo in tempo:
 
             finale = np.abs((A)-np.abs(reconstructed_A))
             finale_coeff = np.abs((A)-np.abs(reconstructed_A_coeff))
-            finale_sindy = np.abs((A)-np.abs(sindy))
+            ###finale_sindy = np.abs((A)-np.abs(sindy))
             #print("finale sindy",finale_sindy)
-            finale_coeff_sindy = np.abs((A)-np.abs(sindy_coeff))
+            ###finale_coeff_sindy = np.abs((A)-np.abs(sindy_coeff))
             #print("A?",A , " sindycoeff ", sindy_coeff)
             #print("finale coeff??", finale_coeff_sindy)
             abs_matrices_coeff = [(matrix) for matrix in reconstructed_matrices_coeff]
@@ -1325,33 +1262,33 @@ for tempo in tempo:
                 for j in range(N):
                     total_sum_finale += finale_coeff[i, j] ** 2
 
-            total_sum_final_sindy = 0.0
-            for i in range(N):
-                for j in range(N):
-                    #if abs(finale_sindy[i, j]) > t:
-                        total_sum_final_sindy += finale_sindy[i, j] ** 2
+            ###total_sum_final_sindy = 0.0
+            ###for i in range(N):
+            ###    for j in range(N):
+            ###        #if abs(finale_sindy[i, j]) > t:
+            ###            total_sum_final_sindy += finale_sindy[i, j] ** 2
             #print("Somma dei quadrati degli elementi di finale_sindy (filtrati):", total_sum_final_sindy)
 
             # Calcolo della somma dei quadrati degli elementi della matrice delle differenze finale_coeff_sindy, considerando solo i valori > t
             total_sum_finale_sindy = 0.0
-            for i in range(N):
-                for j in range(N):
-                    #if abs(finale_coeff_sindy[i, j]) > t:
-                        total_sum_finale_sindy += finale_coeff_sindy[i, j] ** 2
+            ###for i in range(N):
+            ###    for j in range(N):
+            ###        #if abs(finale_coeff_sindy[i, j]) > t:
+            ###            total_sum_finale_sindy += finale_coeff_sindy[i, j] ** 2
             #print("Somma dei quadrati degli elementi di finale_coeff_sindy (filtrati):", total_sum_finale_sindy)
 
             #print("Somma dei quadrati degli elementi della matrice delle differenze:", total_sum_finale)
             Forbenius_metric = total_sum_final/total_sum_A
             Forbenius_coeff = total_sum_finale/total_sum_A
 
-            Forbenius_metric_sindy = total_sum_final_sindy/total_sum_A
-            Forbenius_coeff_sindy = total_sum_finale_sindy/total_sum_A
+            ###Forbenius_metric_sindy = total_sum_final_sindy/total_sum_A
+            ###Forbenius_coeff_sindy = total_sum_finale_sindy/total_sum_A
 
             total_sum_final_values_valori.append(Forbenius_metric)
             total_sum_finale_values_valori.append(Forbenius_coeff)
 
-            total_sum_final_values_sindy_valori.append(Forbenius_metric_sindy)
-            total_sum_finale_values_sindy_valori.append(Forbenius_coeff_sindy)
+            ###total_sum_final_values_sindy_valori.append(Forbenius_metric_sindy)
+            ###total_sum_finale_values_sindy_valori.append(Forbenius_coeff_sindy)
 
             '''
             rec = torch.tensor(finale, dtype=torch.float32)
@@ -1386,35 +1323,35 @@ for tempo in tempo:
                 #print("debug frobenius",Forbenius_metric)
                 total_sum_final_values_10_valori.append(Forbenius_metric)
                 total_sum_finale_values_10_valori.append(Forbenius_coeff)           
-                total_sum_final_values_10_sindy_valori.append(Forbenius_metric_sindy)
-                total_sum_finale_values_10_sindy_valori.append(Forbenius_coeff_sindy)   
+                ###total_sum_final_values_10_sindy_valori.append(Forbenius_metric_sindy)
+                ###total_sum_finale_values_10_sindy_valori.append(Forbenius_coeff_sindy)   
                 if t == max_valori:
                     np.save(f"{folder_path}/total_sum_final_values_10_valori.npy", total_sum_final_values_10_valori)
                     np.save(f"{folder_path}/total_sum_finale_values_10_valori.npy", total_sum_finale_values_10_valori)
-                    np.save(f"{folder_path}/total_sum_final_values_10_sindy_valori.npy", total_sum_final_values_10_sindy_valori)
-                    np.save(f"{folder_path}/total_sum_finale_values_10_sindy_valori.npy", total_sum_finale_values_10_sindy_valori)
+                    ###np.save(f"{folder_path}/total_sum_final_values_10_sindy_valori.npy", total_sum_final_values_10_sindy_valori)
+                    ###np.save(f"{folder_path}/total_sum_finale_values_10_sindy_valori.npy", total_sum_finale_values_10_sindy_valori)
                     #print("valori 10", total_sum_final_values_10_sindy_valori)
 
             if SNR ==20:
                 total_sum_final_values_20_valori.append(Forbenius_metric)
                 total_sum_finale_values_20_valori.append(Forbenius_coeff)
-                total_sum_final_values_20_sindy_valori.append(Forbenius_metric_sindy)
-                total_sum_finale_values_20_sindy_valori.append(Forbenius_coeff_sindy) 
+                ###total_sum_final_values_20_sindy_valori.append(Forbenius_metric_sindy)
+                ###total_sum_finale_values_20_sindy_valori.append(Forbenius_coeff_sindy) 
                 if t == max_valori:
                     np.save(f"{folder_path}/total_sum_final_values_20_valori.npy", total_sum_final_values_20_valori)
                     np.save(f"{folder_path}/total_sum_finale_values_20_valori.npy", total_sum_finale_values_20_valori)
-                    np.save(f"{folder_path}/total_sum_final_values_20_sindy_valori.npy", total_sum_final_values_20_sindy_valori)
-                    np.save(f"{folder_path}/total_sum_finale_values_20_sindy_valori.npy", total_sum_finale_values_20_sindy_valori)
+                    ###np.save(f"{folder_path}/total_sum_final_values_20_sindy_valori.npy", total_sum_final_values_20_sindy_valori)
+                    ###np.save(f"{folder_path}/total_sum_finale_values_20_sindy_valori.npy", total_sum_finale_values_20_sindy_valori)
             if SNR == 100:
                 total_sum_final_values_100_valori.append(Forbenius_metric)
                 total_sum_finale_values_100_valori.append(Forbenius_coeff)
-                total_sum_final_values_100_sindy_valori.append(Forbenius_metric_sindy)
-                total_sum_finale_values_100_sindy_valori.append(Forbenius_coeff_sindy) 
+                ###total_sum_final_values_100_sindy_valori.append(Forbenius_metric_sindy)
+                ###total_sum_finale_values_100_sindy_valori.append(Forbenius_coeff_sindy) 
                 if t == max_valori:
                     np.save(f"{folder_path}/total_sum_final_values_100_valori.npy", total_sum_final_values_100_valori)
                     np.save(f"{folder_path}/total_sum_finale_values_100_valori.npy", total_sum_finale_values_100_valori)
-                    np.save(f"{folder_path}/total_sum_final_values_100_sindy_valori.npy", total_sum_final_values_100_sindy_valori)
-                    np.save(f"{folder_path}/total_sum_finale_values_100_sindy_valori.npy", total_sum_finale_values_100_sindy_valori)
+                    ###np.save(f"{folder_path}/total_sum_final_values_100_sindy_valori.npy", total_sum_final_values_100_sindy_valori)
+                    ###np.save(f"{folder_path}/total_sum_finale_values_100_sindy_valori.npy", total_sum_finale_values_100_sindy_valori)
 
 
     #plt.show()
@@ -1456,31 +1393,31 @@ for tempo in tempo:
 
 
     full_time = state_true["valid_t"]  # Array completo dei tempi
-    num_points = [len(rms_means_sindy[i]) for i in range(3)]
+    ###num_points = [len(rms_means_sindy[i]) for i in range(3)]
     plt.figure(figsize=(10, 6))
     for i in range(3):  # Itera per i 3 gruppi
 
         interval = len(full_time) / num_points[i]
         indices = np.round(np.arange(0, len(full_time), interval)).astype(int)
         valid_t_segment = full_time[indices]
-        rms_group_sindy = rms_means_sindy[i]
-        sigma_group_sindy = sigma_means_sindy[i]
+        ###rms_group_sindy = rms_means_sindy[i]
+        ###sigma_group_sindy = sigma_means_sindy[i]
 
 
-        plt.errorbar(valid_t_segment, rms_group_sindy, yerr=sigma_group_sindy, fmt='-o', color=colors[i], ecolor=colors[i], capsize=5, label=gruppo[i])
+        ###plt.errorbar(valid_t_segment, rms_group_sindy, yerr=sigma_group_sindy, fmt='-o', color=colors[i], ecolor=colors[i], capsize=5, label=gruppo[i])
 
     plt.xlabel('tempo')
     plt.ylabel('RMS')
-    plt.title('RMS SINDy')
+    ###plt.title('RMS SINDy')
     plt.legend(title=f'SNR: {SNR}')
     plt.grid(True)
 
     # Definisci il nome del file includendo parametri dinamici
-    file_path = f"{folder_path}/confronti_forward_SINDy_{tempo}_{num_dati}_{SNR}.png"
-    plt.savefig(file_path, bbox_inches='tight')
+    ###file_path = f"{folder_path}/confronti_forward_SINDy_{tempo}_{num_dati}_{SNR}.png"
+    ###plt.savefig(file_path, bbox_inches='tight')
     #plt.show()
-    del rms_group_sindy
-    del sigma_group_sindy
+    ###del rms_group_sindy
+    ###del sigma_group_sindy
 
 
 
@@ -1496,8 +1433,8 @@ for tempo in tempo:
         valid_t_segment = full_time[indices]
         rms_group_1 = rms_means_1[i]
         sigma_group_1 = sigma_means_1[i]
-        rms_group_sindy_1 = rms_means_sindy_1[i]
-        sigma_group_sindy_1 = sigma_means_sindy_1[i]
+        ###rms_group_sindy_1 = rms_means_sindy_1[i]
+        ###sigma_group_sindy_1 = sigma_means_sindy_1[i]
         #print("Dimensione di valid_t:", len(state_truee["valid_t"]))
         #print("Dimensione di rms_group_1:", len(rms_group_1))
         #print("Dimensione di sigma_group_1:", len(sigma_group_1))
@@ -1520,29 +1457,29 @@ for tempo in tempo:
 
 
     full_time = state_truee["valid_t"]  # Array completo dei tempi
-    num_points = [len(rms_means_sindy_1[i]) for i in range(3)]
+    ###num_points = [len(rms_means_sindy_1[i]) for i in range(3)]
     plt.figure(figsize=(10, 6))
     for i in range(3):  # Itera per i 3 gruppi
         interval = len(full_time) / num_points[i]
         indices = np.round(np.arange(0, len(full_time), interval)).astype(int)
         valid_t_segment = full_time[indices]
-        rms_group_sindy_1 = rms_means_sindy_1[i]
-        sigma_group_sindy_1 = sigma_means_sindy_1[i]
+        ###rms_group_sindy_1 = rms_means_sindy_1[i]
+        ###sigma_group_sindy_1 = sigma_means_sindy_1[i]
         
 
-        plt.errorbar(valid_t_segment, rms_group_sindy_1, yerr=sigma_group_sindy_1, fmt='-o', color=colors[i], ecolor=colors[i], capsize=5, label=gruppo[i])
+        ###plt.errorbar(valid_t_segment, rms_group_sindy_1, yerr=sigma_group_sindy_1, fmt='-o', color=colors[i], ecolor=colors[i], capsize=5, label=gruppo[i])
 
     plt.xlabel('tempo')
     plt.ylabel('RMS')
-    plt.title('RMS SINDy')
+    ###plt.title('RMS SINDy')
     plt.legend(title=f'SNR: {SNR}')
     plt.grid(True)
 
     # Definisci il nome del file includendo parametri dinamici
-    file_path = f"{folder_path}/confronti_forward_SINDy_1s_{tempo}_{num_dati}_{SNR}.png"
-    plt.savefig(file_path, bbox_inches='tight')
+    ###file_path = f"{folder_path}/confronti_forward_SINDy_1s_{tempo}_{num_dati}_{SNR}.png"
+    ###plt.savefig(file_path, bbox_inches='tight')
     #plt.show()
-    del rms_group_sindy_1
-    del sigma_group_sindy_1
+    ###del rms_group_sindy_1
+    ###del sigma_group_sindy_1
 
     
