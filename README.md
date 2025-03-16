@@ -38,9 +38,9 @@ Below are the graphs of the Frobenius Metric for each value of SNR ( 60, 80, 100
 
 ## Discussion
 From the graphs, we observe that:
-- **[Observation 1]**: The Frobenius Metric is notably higher for the Random Geometric Graph topology, while the other three topologies do not show a consistent advantage over one another.
-- **[Observation 2]**: There is no clear preference for the value K, the best results, meaning those with lower Frobenius metrics at t=0, where K= 0.5 and 0.8.
+- **[Observation 1]**: The Frobenius Metric is notably higher for the SBM topology for SNR = 100 and 80, while it performed better on higher noise ( SNR = 60).
+- **[Observation 2]**: Similarly the RMSE of the SBM topology performed worse than BA and ER on SNR = 100 and 80, while it did better with (SNR = 60 ).
+- **[Observation 3]**: Both methods perform better with lower noise, in the case of SNR = 100 SVISE performs more consistent, meaning that every topology show a similar result, on the other hand SINDy scored the best result but the performance on SBM was worse among the 2 methods.
+- **[Observation 4]**: SBM with K = 0.3 performed particularly bad, making it not suitable to show on a graph with others. Other than that there is no particular preferance for the coupling constant.
 
-## Conclusion
-The results indicate that the effect of the coupling constant could cause the Frobenius norm to vary but there is no clear evidence for a preference towards a topology among SBM, BA or ER while the RGR performed worse than the other 3.
 
