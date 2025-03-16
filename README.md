@@ -8,7 +8,9 @@ Below are the graphs of the Frobenius Metric for each value of SNR ( 60, 80, 100
 
 #### SINDy (SNR = 100) 
 <img src="Graphs/FROBENIUSCOMPARATO_100_sindy.png" alt="SNR = 100" title = " SINDy" width="600"/>
-## SVISE (SNR = 100)
+
+
+#### SVISE (SNR = 100)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_100.png" alt="SNR = 100" width="600"/>
 
 
