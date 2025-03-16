@@ -16,12 +16,16 @@ Below are the graphs of the Frobenius Metric for each value of SNR ( 60, 80, 100
 
 #### SINDy (SNR = 80) 
 <img src="Graphs/FROBENIUSCOMPARATO_80_sindy.png" alt="SNR = 80" width="600"/>
+
+
 #### SVISE (SNR = 80)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_80.png" alt="SNR = 100" width="600"/>
 
 
 #### SINDy (SNR = 80) 
 <img src="Graphs/FROBENIUSCOMPARATO_60_sindy.png" alt="SNR = 60" width="600"/>
+
+
 #### SVISE (SNR = 80)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_60.png" alt="SNR = 100" width="600"/>
 
