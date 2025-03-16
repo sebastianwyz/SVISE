@@ -8,26 +8,32 @@ Below are the graphs of the Frobenius Metric for each value of SNR ( 60, 80, 100
 
 #### SINDy (SNR = 100) 
 <img src="Graphs/FROBENIUSCOMPARATO_100_sindy.png" alt="SNR = 100" title = " SINDy" width="600"/>
+<img src="Graphs/sindy_8_100.png" alt="SNR = 100" title = " SINDy" width="600"/>
 
 
 #### SVISE (SNR = 100)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_100.png" alt="SNR = 100" width="600"/>
+<img src="Graphs/svise_8_100.png" alt="SNR = 100" title = " SINDy" width="600"/>
 
 
 #### SINDy (SNR = 80) 
 <img src="Graphs/FROBENIUSCOMPARATO_80_sindy.png" alt="SNR = 80" width="600"/>
+<img src="Graphs/sindy_8_80.png" alt="SNR = 80" title = " SINDy" width="600"/>
 
 
 #### SVISE (SNR = 80)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_80.png" alt="SNR = 100" width="600"/>
+<img src="Graphs/svise_8_80.png" alt="SNR = 80" title = " SINDy" width="600"/>
 
 
-#### SINDy (SNR = 80) 
+#### SINDy (SNR = 60) 
 <img src="Graphs/FROBENIUSCOMPARATO_60_sindy.png" alt="SNR = 60" width="600"/>
+<img src="Graphs/sindy_8_60.png" alt="SNR = 60" title = " SINDy" width="600"/>
 
 
-#### SVISE (SNR = 80)
+#### SVISE (SNR = 60)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_60.png" alt="SNR = 100" width="600"/>
+<img src="Graphs/svise_8_60.png" alt="SNR = 60" title = " SINDy" width="600"/>
 
 
 ## Discussion
