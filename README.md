@@ -6,18 +6,21 @@ This project investigates the variation of the **Frobenius Metric** across diffe
 ### Frobenius Metric Graphs
 Below are the graphs of the Frobenius Metric for each value of SNR ( 60, 80, 100 ). Each graph includes all network types (SBM, ER, BA).
 
-#### 1. SNR = 100 
+#### SINDy (SNR = 100) 
 <img src="Graphs/FROBENIUSCOMPARATO_100_sindy.png" alt="SNR = 100" title = " SINDy" width="600"/>
+#### SVISE (SNR = 100)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_100.png" alt="SNR = 100" width="600"/>
 
 
-#### 2. SNR = 80
+#### SINDy (SNR = 80) 
 <img src="Graphs/FROBENIUSCOMPARATO_80_sindy.png" alt="SNR = 80" width="600"/>
+#### SVISE (SNR = 80)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_80.png" alt="SNR = 100" width="600"/>
 
 
-#### 3. SNR = 60
+#### SINDy (SNR = 80) 
 <img src="Graphs/FROBENIUSCOMPARATO_60_sindy.png" alt="SNR = 60" width="600"/>
+#### SVISE (SNR = 80)
 <img src="Graphs/FROBENIUSCOMPARATO_SVISE_60.png" alt="SNR = 100" width="600"/>
 
 
