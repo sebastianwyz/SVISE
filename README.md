@@ -1,5 +1,5 @@
 # Analysis of the Frobenius Metric on Kuramoto Networks
-### PREMECE
+### Premise
 The SVISE method had been used, in order to perform analysis with trygonometric functions, a change to the original program has been made, in sde_learning and sparse_glm.py
 ## Overview
 This project investigates the variation of the **Frobenius Metric** across different types of neural networks (SBM, ER, BA) based on threshold t values and different coupling constants (0.3, 0.5, 0.8). The goal is to verify the effectiveness of the **SVISE method** and the **SINDy method** on networks with a constant number of connections but different topologies.
