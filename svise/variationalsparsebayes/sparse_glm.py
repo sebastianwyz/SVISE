@@ -513,7 +513,7 @@ class SparsePolynomialSinusoidTfm(SparsePolynomialFeatures):
         
         
         '''
-        ################################################# LORENZ MATTO ###################################################################
+        ################################################# LORENZ  ###################################################################
         terms_to_concat = []
 
         # Fissiamo i = 1 per ottenere solo le differenze che coinvolgono la coordinata 1
